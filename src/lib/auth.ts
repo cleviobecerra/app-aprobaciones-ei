@@ -24,7 +24,7 @@ export async function createSession(userId: string) {
   jar.set(COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL),
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
@@ -52,10 +52,15 @@ export async function getSessionUser() {
   const userId = await getSessionUserId();
   if (!userId) return null;
 
-  return prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true, email: true, name: true, area: true, role: true },
-  });
+  try {
+    return await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, name: true, area: true, role: true },
+    });
+  } catch (error) {
+    console.error("getSessionUser", error);
+    return null;
+  }
 }
 
 export async function requireUser() {

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { userOwnsRequest } from "@/lib/workflow";
+import { uploadDir } from "@/lib/paths";
 
 export async function GET(
   request: Request,
@@ -37,7 +38,7 @@ export async function GET(
     return NextResponse.json({ error: "Sin archivo" }, { status: 404 });
   }
 
-  const filePath = path.join(process.cwd(), "uploads", doc.storedName);
+  const filePath = path.join(uploadDir(), doc.storedName);
   try {
     const data = await readFile(filePath);
     return new NextResponse(data, {

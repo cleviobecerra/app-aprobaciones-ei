@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { createAccessToken, isValidEmail, normalizeEmail } from "@/lib/tokens";
+import { uploadDir } from "@/lib/paths";
 import { cancelRequestFlow, decideByToken, notifyPendingInvites, sendRequestFlow } from "@/lib/workflow";
 
 type RecipientInput = { name: string; email: string };
@@ -40,11 +41,11 @@ async function saveUpload(file: File | null) {
     throw new Error("El archivo no puede superar 12 MB.");
   }
 
-  const uploadDir = path.join(process.cwd(), "uploads");
-  await mkdir(uploadDir, { recursive: true });
+  const dir = uploadDir();
+  await mkdir(dir, { recursive: true });
   const ext = path.extname(file.name).slice(0, 12);
   const storedName = `${randomUUID()}${ext}`;
-  await writeFile(path.join(uploadDir, storedName), Buffer.from(await file.arrayBuffer()));
+  await writeFile(path.join(dir, storedName), Buffer.from(await file.arrayBuffer()));
 
   return {
     fileName: file.name,

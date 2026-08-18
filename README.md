@@ -1,36 +1,31 @@
 # App Aprobaciones
 
-Flujos de aprobación por **correo y enlace**, como DocuSign: escribes el email de quien debe aprobar y esa persona entra sin cuenta ni rol.
+Flujos de aprobación por correo y enlace. El administrador crea cuentas; el solicitante envía solicitudes; quien aprueba entra con el enlace del mail.
 
-## Cómo arrancar
+Base de datos: **Supabase Postgres** (proyecto `app-aprobaciones`). La app usa Prisma en el servidor; las tablas tienen RLS activo y sin políticas para que la Data API no las exponga.
+
+## Variables en Vercel
+
+En **Settings → Environment Variables** (Production):
+
+| Variable | Valor |
+| --- | --- |
+| `DATABASE_URL` | Pooler transacción (puerto 6543, con `?pgbouncer=true`) |
+| `DIRECT_URL` | Pooler sesión (puerto 5432) |
+| `AUTH_SECRET` | Texto largo aleatorio |
+| `APP_URL` | `https://app-aprobaciones-ei.vercel.app` |
+
+Copia `DATABASE_URL`, `DIRECT_URL` y `AUTH_SECRET` desde el `.env` local (no está en git). Dashboard: https://supabase.com/dashboard/project/zlqzrjrmuntznoknaolk
+
+Tras el primer login se crean:
+
+- Administrador: `admin@eisa.local` / `demo1234`
+- Solicitante: `ana.garcia@eisa.local` / `demo1234`
+
+## Local
 
 ```bash
-cd app-tmp
 npm install
-npx prisma db push
-npx tsx prisma/seed.ts
+npx prisma generate
 npm run dev
 ```
-
-Abre [http://localhost:3000](http://localhost:3000).
-
-## Quién inicia sesión
-
-Solo quien **envía** la solicitud:
-
-- `ana.garcia@eisa.local` / `demo1234`
-
-Los destinatarios **no se registran**. Reciben un enlace `/aprobar/...` y aprueban o rechazan ahí.
-
-## Correo
-
-Si configuras SMTP en `.env` (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`), el enlace se manda al correo.
-
-Sin SMTP, el enlace queda en **Correos** y en la solicitud, para copiarlo o abrirlo como si hubiera llegado el mail.
-
-## Flujo
-
-- Etapas en orden: la 2 solo se activa cuando termina la 1.
-- Varios correos en la misma etapa = paralelo.
-- Un rechazo cierra la solicitud.
-- Cada acción queda en la pista de auditoría.
