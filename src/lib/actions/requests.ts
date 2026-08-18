@@ -58,6 +58,7 @@ function refresh(requestId: string) {
   revalidatePath(`/requests/${requestId}`);
   revalidatePath("/inbox");
   revalidatePath("/sent");
+  revalidatePath("/admin-requests");
 }
 
 export async function createRequestAction(

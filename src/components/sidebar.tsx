@@ -22,7 +22,7 @@ export function Sidebar({
         { href: "/settings", label: "Correo SMTP", icon: Settings },
       ]
     : [
-        { href: "/sent", label: "Enviadas", icon: Send },
+        { href: "/sent", label: "Mis solicitudes", icon: Send },
         { href: "/requests/new", label: "Nueva solicitud", icon: FilePlus2 },
       ];
 
