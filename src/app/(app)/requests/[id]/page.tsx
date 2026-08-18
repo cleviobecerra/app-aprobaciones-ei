@@ -1,0 +1,136 @@
+import { notFound } from "next/navigation";
+import { FileText } from "lucide-react";
+import { requireUser } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { isMailConfigured } from "@/lib/mail";
+import { auditActionLabel, formatDate } from "@/lib/labels";
+import { StatusBadge } from "@/components/status-badge";
+import { FlowTimeline } from "@/components/flow-timeline";
+import { isAdmin } from "@/lib/roles";
+import { InviteLinks } from "@/components/invite-links";
+import { ActionsPanel } from "./actions-panel";
+
+export default async function RequestDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const user = await requireUser();
+  const { id } = await params;
+
+  const request = await prisma.approvalRequest.findFirst({
+    where: isAdmin(user.role) ? { id } : { id, createdById: user.id },
+    include: {
+      createdBy: true,
+      stages: {
+        orderBy: { order: "asc" },
+        include: {
+          tasks: { orderBy: { email: "asc" } },
+        },
+      },
+      auditEvents: { orderBy: { createdAt: "desc" } },
+    },
+  });
+
+  if (!request) notFound();
+
+  const pendingInvites = request.stages.flatMap((stage) =>
+    stage.tasks.map((task) => ({
+      email: task.email,
+      name: task.name,
+      accessToken: task.accessToken,
+      status: task.status,
+    })),
+  );
+
+  const isPreviewable = Boolean(
+    request.storedName && request.mimeType && (request.mimeType.startsWith("image/") || request.mimeType === "application/pdf"),
+  );
+  const smtpReady = await isMailConfigured();
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+      <div className="space-y-6">
+        <header className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-sm text-slate-500">Solicitud</p>
+              <h1 className="mt-1 text-2xl font-semibold">{request.title}</h1>
+            </div>
+            <StatusBadge status={request.status} />
+          </div>
+          <p className="mt-3 whitespace-pre-wrap text-slate-600">{request.description || "Sin descripción."}</p>
+          <p className="mt-4 text-sm text-slate-500">
+            Creada por {request.createdBy.name} · {formatDate(request.createdAt)}
+          </p>
+        </header>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="mb-4 font-semibold">Documento</h2>
+          {request.storedName ? (
+            <div>
+              <a
+                href={`/api/files/${request.id}`}
+                className="inline-flex items-center gap-2 text-sm font-medium text-blue-700 hover:underline"
+              >
+                <FileText className="size-4" />
+                {request.fileName}
+              </a>
+              {isPreviewable ? (
+                <iframe
+                  title={request.fileName ?? "Documento"}
+                  src={`/api/files/${request.id}`}
+                  className="mt-4 h-[480px] w-full rounded-xl border border-slate-200"
+                />
+              ) : null}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">Esta solicitud no tiene archivo adjunto.</p>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="mb-2 font-semibold">Pista de auditoría</h2>
+          <ol className="space-y-3">
+            {request.auditEvents.map((event) => (
+              <li key={event.id} className="border-l-2 border-slate-200 pl-3">
+                <p className="text-sm font-medium text-slate-900">
+                  {event.actorName || event.actorEmail || "Sistema"} · {auditActionLabel[event.action] ?? event.action}
+                </p>
+                <p className="text-sm text-slate-600">{event.detail}</p>
+                <p className="text-xs text-slate-400">{formatDate(event.createdAt)}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+
+      <aside className="space-y-6">
+        <ActionsPanel requestId={request.id} status={request.status} isOwner={request.createdById === user.id} />
+        {isAdmin(user.role) ? (
+          <section className="rounded-2xl border border-slate-200 bg-white p-5">
+            <h2 className="mb-1 font-semibold">Enlaces de acceso</h2>
+            <p className="mb-4 text-xs text-slate-500">
+              {smtpReady
+                ? "También se enviaron por correo a cada destinatario de la etapa actual."
+                : "El correo aún no sale: configura SMTP en Correo SMTP. Mientras tanto puedes abrir el enlace aquí."}
+            </p>
+            <InviteLinks invites={pendingInvites} />
+          </section>
+        ) : (
+          <section className="rounded-2xl border border-slate-200 bg-white p-5">
+            <h2 className="mb-1 font-semibold">Destinatarios</h2>
+            <p className="text-sm text-slate-600">
+              El enlace de aprobación solo llega al correo de cada persona. El solicitante no puede
+              verlo ni copiarlo.
+            </p>
+          </section>
+        )}
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <h2 className="mb-4 font-semibold">Flujo</h2>
+          <FlowTimeline stages={request.stages} currentStage={request.currentStage} />
+        </section>
+      </aside>
+    </div>
+  );
+}

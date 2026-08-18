@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  area         String   @default("")
+  role         String   @default("SOLICITANTE")
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  requestsCreated ApprovalRequest[] @relation("CreatedBy")
+  auditEvents     AuditEvent[]
+}
+
+model ApprovalRequest {
+  id           String    @id @default(cuid())
+  title        String
+  description  String    @default("")
+  status       String    @default("DRAFT")
+  currentStage Int       @default(1)
+  fileName     String?
+  storedName   String?
+  mimeType     String?
+  createdById  String
+  createdBy    User      @relation("CreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sentAt       DateTime?
+  completedAt  DateTime?
+
+  stages      ApprovalStage[]
+  auditEvents AuditEvent[]
+  emails      OutboundEmail[]
+}
+
+model ApprovalStage {
+  id        String          @id @default(cuid())
+  requestId String
+  request   ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  order     Int
+  name      String
+  mode      String          @default("ALL")
+  tasks     ApprovalTask[]
+
+  @@unique([requestId, order])
+}
+
+model ApprovalTask {
+  id          String        @id @default(cuid())
+  stageId     String
+  stage       ApprovalStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  email       String
+  name        String        @default("")
+  accessToken String        @unique
+  status      String        @default("WAITING")
+  comment     String        @default("")
+  invitedAt   DateTime?
+  actedAt     DateTime?
+
+  @@unique([stageId, email])
+}
+
+model OutboundEmail {
+  id        String          @id @default(cuid())
+  requestId String
+  request   ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  toEmail   String
+  toName    String          @default("")
+  subject   String
+  bodyText  String
+  accessUrl String
+  delivered Boolean         @default(false)
+  error     String          @default("")
+  createdAt DateTime        @default(now())
+}
+
+model AuditEvent {
+  id         String          @id @default(cuid())
+  requestId  String
+  request    ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  actorId    String?
+  actor      User?           @relation(fields: [actorId], references: [id])
+  actorEmail String          @default("")
+  actorName  String          @default("")
+  action     String
+  detail     String          @default("")
+  createdAt  DateTime        @default(now())
+}
+
+model MailSettings {
+  id        String   @id @default("default")
+  host      String   @default("")
+  port      Int      @default(587)
+  secure    Boolean  @default(false)
+  username  String   @default("")
+  password  String   @default("")
+  fromEmail String   @default("")
+  fromName  String   @default("Aprobaciones")
+  updatedAt DateTime @updatedAt
+}
