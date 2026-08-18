@@ -40,6 +40,9 @@ export function describeDbError(error: unknown) {
   if (message.toLowerCase().includes("can't reach") || message.includes("P1001") || message.includes("P1017")) {
     return "No se pudo conectar a la base de datos. Revisa DATABASE_URL en Vercel.";
   }
+  if (message.includes("P1013") || message.toLowerCase().includes("scheme is not recognized")) {
+    return "DATABASE_URL inválida en Vercel. Pégala sin comillas, empezando por postgresql://";
+  }
   if (message.includes("does not exist") || message.includes("P2021") || message.includes("P2010")) {
     return "La base no tiene las tablas. Vuelve a desplegar para que se ejecute prisma db push.";
   }

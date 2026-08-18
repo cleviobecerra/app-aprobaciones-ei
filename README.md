@@ -15,7 +15,7 @@ En **Settings → Environment Variables** (Production):
 | `AUTH_SECRET` | Texto largo aleatorio |
 | `APP_URL` | `https://app-aprobaciones-ei.vercel.app` |
 
-Copia `DATABASE_URL`, `DIRECT_URL` y `AUTH_SECRET` desde el `.env` local (no está en git). Dashboard: https://supabase.com/dashboard/project/zlqzrjrmuntznoknaolk
+Copia `DATABASE_URL`, `DIRECT_URL` y `AUTH_SECRET` desde el `.env` local (no está en git). **Sin comillas** alrededor del valor. Dashboard: https://supabase.com/dashboard/project/zlqzrjrmuntznoknaolk
 
 Tras el primer login se crean:
 

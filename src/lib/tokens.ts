@@ -19,7 +19,10 @@ export function displayName(name: string, email: string) {
 }
 
 export function appUrl() {
-  return (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const configured = (process.env.APP_URL || "").replace(/\/$/, "");
+  if (configured && !configured.includes("localhost")) return configured;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
+  return configured || "http://localhost:3000";
 }
 
 export function approvalUrl(token: string) {
