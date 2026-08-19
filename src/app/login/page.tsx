@@ -2,13 +2,17 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { homePath } from "@/lib/roles";
 import { BrandMark } from "@/components/brand-mark";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { LoginForm } from "./login-form";
 
 export default async function LoginPage() {
   const user = await getSessionUser();
   if (user) redirect(homePath(user.role));
   return (
-    <main className="login-mesh flex min-h-dvh flex-col items-center justify-center px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
+    <main className="login-mesh relative flex min-h-dvh flex-col items-center justify-center px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
+      <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3">
+        <ThemeToggle />
+      </div>
       <div className="mb-8 flex flex-col items-center text-center">
         <BrandMark size="lg" />
         <h1 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">Aprobaciones</h1>

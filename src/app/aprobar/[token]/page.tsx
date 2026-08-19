@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/labels";
 import { StatusBadge } from "@/components/status-badge";
 import { BrandMark } from "@/components/brand-mark";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { PublicDecisionForm } from "./decision-form";
 
 export default async function PublicApprovePage({
@@ -37,10 +38,11 @@ export default async function PublicApprovePage({
       <header className="border-b border-line/80 bg-surface/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-4">
           <BrandMark size="sm" />
-          <div>
+          <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold tracking-tight">Aprobaciones</p>
             <p className="text-xs text-subtle">Acceso por enlace · no necesitas cuenta</p>
           </div>
+          <ThemeToggle />
         </div>
       </header>
 

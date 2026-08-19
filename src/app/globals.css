@@ -1,12 +1,15 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light;
   --background: #f3f5f9;
   --surface: #ffffff;
   --foreground: #0b1220;
   --muted: #4b5563;
   --subtle: #6b7280;
   --line: #e5e7eb;
+  --line-hover: #cbd5e1;
   --soft: #eef1f6;
   --primary: #4f46e5;
   --primary-hover: #4338ca;
@@ -22,6 +25,36 @@
   --warning: #d97706;
   --warning-50: #fffbeb;
   --warning-700: #b45309;
+  --shadow: rgba(15, 23, 42, 0.04);
+  --shadow-hover: rgba(15, 23, 42, 0.35);
+}
+
+html.dark {
+  color-scheme: dark;
+  --background: #0b1020;
+  --surface: #151b2c;
+  --foreground: #eef2ff;
+  --muted: #b6bfd4;
+  --subtle: #8b95ad;
+  --line: #2a3348;
+  --line-hover: #3d4a66;
+  --soft: #1c2438;
+  --primary: #818cf8;
+  --primary-hover: #a5b4fc;
+  --primary-50: #1e1b4b;
+  --primary-200: #3730a3;
+  --primary-700: #c7d2fe;
+  --danger: #f87171;
+  --danger-50: #3f1d1d;
+  --danger-700: #fca5a5;
+  --success: #34d399;
+  --success-50: #10291f;
+  --success-700: #6ee7b7;
+  --warning: #fbbf24;
+  --warning-50: #3a2e12;
+  --warning-700: #fcd34d;
+  --shadow: rgba(0, 0, 0, 0.28);
+  --shadow-hover: rgba(0, 0, 0, 0.7);
 }
 
 @theme inline {
@@ -108,7 +141,7 @@ textarea.ui-input {
 }
 
 .ui-input:hover {
-  border-color: #cbd5e1;
+  border-color: var(--line-hover);
 }
 
 .ui-input:focus {
@@ -183,7 +216,7 @@ button.ui-input {
 
 .ui-btn-secondary:hover:not(:disabled) {
   background: var(--soft);
-  border-color: #d1d5db;
+  border-color: var(--line-hover);
 }
 
 .ui-btn-ghost {
@@ -247,7 +280,7 @@ button.ui-input {
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 2px var(--shadow);
 }
 
 @media (min-width: 768px) {
@@ -263,7 +296,7 @@ button.ui-input {
 .ui-card-hover:hover {
   transform: translateY(-2px);
   border-color: var(--primary-200);
-  box-shadow: 0 12px 28px -18px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 12px 28px -18px var(--shadow-hover);
 }
 
 .ui-page-title {
@@ -342,9 +375,17 @@ button.ui-input {
 
 .login-mesh {
   background:
-    radial-gradient(1200px 500px at 10% -10%, rgba(79, 70, 229, 0.18), transparent 55%),
+    radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--primary) 22%, transparent), transparent 55%),
     radial-gradient(900px 420px at 110% 10%, rgba(14, 165, 233, 0.14), transparent 50%),
-    radial-gradient(700px 400px at 50% 120%, rgba(79, 70, 229, 0.1), transparent 45%),
+    radial-gradient(700px 400px at 50% 120%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 45%),
+    var(--background);
+}
+
+html.dark .login-mesh {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(129, 140, 248, 0.18), transparent 55%),
+    radial-gradient(900px 420px at 110% 10%, rgba(14, 165, 233, 0.08), transparent 50%),
+    radial-gradient(700px 400px at 50% 120%, rgba(129, 140, 248, 0.1), transparent 45%),
     var(--background);
 }
 

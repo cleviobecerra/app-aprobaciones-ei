@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -23,8 +25,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${plusJakarta.variable} h-full`}>
-      <body className={`${plusJakarta.className} min-h-full overflow-x-hidden bg-background text-fg antialiased`}>{children}</body>
+    <html lang="es" className={`${plusJakarta.variable} h-full`} suppressHydrationWarning>
+      <body className={`${plusJakarta.className} min-h-full overflow-x-hidden bg-background text-fg antialiased`}>
+        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {children}
+      </body>
     </html>
   );
 }

@@ -8,6 +8,7 @@ import { logoutAction } from "@/lib/actions/auth";
 import { initials } from "@/lib/labels";
 import { isAdmin, isAuditor, roleLabel } from "@/lib/roles";
 import { BrandMark } from "@/components/brand-mark";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type NavItem = { href: string; label: string; icon: typeof Users };
 
@@ -106,11 +107,14 @@ function Account({
           <p className="truncate text-xs text-subtle">{user.area || user.email}</p>
         </div>
       </div>
-      <form action={logoutAction}>
-        <button type="submit" className="ui-iconbtn" title="Cerrar sesión">
-          <LogOut className="size-4" />
-        </button>
-      </form>
+      <div className="flex shrink-0 items-center">
+        <ThemeToggle />
+        <form action={logoutAction}>
+          <button type="submit" className="ui-iconbtn" title="Cerrar sesión">
+            <LogOut className="size-4" />
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -202,15 +206,18 @@ export function Sidebar({
 
       <header className="sticky top-0 z-[100] flex min-h-16 items-center justify-between gap-3 border-b border-line/80 bg-surface/80 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-md lg:hidden">
         <Brand subtitle={subtitle} />
-        <button
-          type="button"
-          className="ui-iconbtn"
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        <div className="flex shrink-0 items-center">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="ui-iconbtn"
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </header>
 
       <div
