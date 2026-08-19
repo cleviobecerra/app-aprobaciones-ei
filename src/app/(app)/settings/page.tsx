@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/lib/auth";
+﻿import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { MailSettingsForm } from "./mail-settings-form";
 
@@ -14,8 +14,8 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-semibold">Correo SMTP</h1>
-      <p className="mt-1 mb-6 text-sm text-slate-500">
+      <h1 className="ui-page-title">Correo SMTP</h1>
+      <p className="ui-page-desc mb-6">
         Sin esto, el enlace se guarda en la app pero no llega a Gmail ni Outlook. En Gmail usa una
         contraseña de aplicación. En Microsoft 365 usa tu correo corporativo.
       </p>

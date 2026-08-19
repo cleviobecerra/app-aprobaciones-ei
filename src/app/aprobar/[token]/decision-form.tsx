@@ -8,11 +8,7 @@ export function PublicDecisionForm({ token }: { token: string }) {
   const [state, action, pending] = useActionState(decideByTokenAction, null);
 
   if (state && "ok" in state) {
-    return (
-      <p className="rounded-xl bg-emerald-50 px-3 py-3 text-sm font-medium text-emerald-800">
-        Listo. Tu decisión quedó registrada.
-      </p>
-    );
+    return <p className="ui-alert ui-alert-success font-medium">Listo. Tu decisión quedó registrada.</p>;
   }
 
   return (
@@ -24,28 +20,18 @@ export function PublicDecisionForm({ token }: { token: string }) {
         onChange={(event) => setComment(event.target.value)}
         rows={3}
         placeholder="Comentario (obligatorio al rechazar)"
-        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-blue-600 focus:ring-2"
+        className="ui-input"
       />
-      <div className="flex gap-2">
-        <button
-          name="decision"
-          value="APPROVED"
-          disabled={pending}
-          className="flex-1 rounded-xl bg-emerald-700 px-3 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
-        >
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <button name="decision" value="APPROVED" disabled={pending} className="ui-btn ui-btn-success w-full sm:flex-1">
           Aprobar
         </button>
-        <button
-          name="decision"
-          value="REJECTED"
-          disabled={pending}
-          className="flex-1 rounded-xl bg-rose-700 px-3 py-2.5 text-sm font-semibold text-white hover:bg-rose-800 disabled:opacity-60"
-        >
+        <button name="decision" value="REJECTED" disabled={pending} className="ui-btn ui-btn-danger w-full sm:flex-1">
           Rechazar
         </button>
       </div>
       {state && "error" in state && state.error ? (
-        <p className="text-sm text-rose-700">{state.error}</p>
+        <p className="ui-alert ui-alert-danger">{state.error}</p>
       ) : null}
     </form>
   );

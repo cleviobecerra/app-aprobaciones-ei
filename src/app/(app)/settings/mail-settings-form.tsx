@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState, useState } from "react";
 import { saveMailSettingsAction, sendTestMailAction } from "@/lib/actions/mail";
@@ -36,28 +36,28 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
 
   return (
     <div className="space-y-6">
-      <form action={action} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
+      <form action={action} className="ui-card space-y-4">
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => applyPreset("outlook")}
-            className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50"
+            className="ui-btn ui-btn-ghost h-8"
           >
             Outlook 365
           </button>
           <button
             type="button"
             onClick={() => applyPreset("gmail")}
-            className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50"
+            className="ui-btn ui-btn-ghost h-8"
           >
             Gmail
           </button>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-subtle">
           Gmail: no uses tu clave habitual. Activa la verificación en 2 pasos y crea una
           contraseña de aplicación de 16 caracteres en{" "}
           <a
-            className="text-blue-700 underline"
+            className="ui-link underline"
             href="https://myaccount.google.com/apppasswords"
             target="_blank"
             rel="noreferrer"
@@ -73,7 +73,7 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
             name="host"
             value={host}
             onChange={(event) => setHost(event.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-blue-600 focus:ring-2"
+            className="ui-input"
           />
         </label>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -83,7 +83,7 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
               name="port"
               value={port}
               onChange={(event) => setPort(event.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-blue-600 focus:ring-2"
+              className="ui-input"
             />
           </label>
           <label className="mt-7 flex items-center gap-2 text-sm">
@@ -103,7 +103,7 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
             type="email"
             defaultValue={saved?.username}
             placeholder="tu.correo@empresa.com"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-blue-600 focus:ring-2"
+            className="ui-input"
           />
         </label>
         <label className="block text-sm">
@@ -112,7 +112,7 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
             name="password"
             type="password"
             placeholder="Contraseña de aplicación (16 caracteres en Gmail)"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-blue-600 focus:ring-2"
+            className="ui-input"
           />
         </label>
         <label className="block text-sm">
@@ -122,25 +122,25 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
             type="email"
             defaultValue={saved?.fromEmail}
             placeholder="tu.correo@empresa.com"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-blue-600 focus:ring-2"
+            className="ui-input"
           />
         </label>
         <input type="hidden" name="fromName" value="Aprobaciones" />
 
-        {state?.error ? <p className="text-sm text-rose-700">{state.error}</p> : null}
-        {state?.ok ? <p className="text-sm text-emerald-700">Configuración guardada.</p> : null}
+        {state?.error ? <p className="ui-alert ui-alert-danger">{state.error}</p> : null}
+        {state?.ok ? <p className="ui-alert ui-alert-success">Configuración guardada.</p> : null}
 
         <button
           type="submit"
           disabled={pending}
-          className="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-60"
+          className="ui-btn ui-btn-primary w-full sm:w-auto"
         >
           {pending ? "Guardando…" : "Guardar"}
         </button>
       </form>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-5">
-        <p className="mb-3 text-sm text-slate-600">
+      <div className="ui-card">
+        <p className="mb-3 text-sm text-muted">
           Envía una prueba a un correo real (Gmail u Outlook). El usuario de demo @eisa.local no
           recibe mail.
         </p>
@@ -149,7 +149,7 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
           value={testTo}
           onChange={(event) => setTestTo(event.target.value)}
           placeholder="tu.correo@gmail.com"
-          className="mb-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none ring-blue-600 focus:ring-2"
+          className="ui-input mb-3"
         />
         <button
           type="button"
@@ -161,12 +161,12 @@ export function MailSettingsForm({ saved }: { saved: Saved | null }) {
             setTest(result.error ? result.error : "Prueba enviada. Revisa bandeja y spam.");
             setTesting(false);
           }}
-          className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+          className="ui-btn ui-btn-secondary w-full sm:w-auto"
         >
           {testing ? "Enviando…" : "Enviar correo de prueba"}
         </button>
         {test ? (
-          <p className={`mt-3 text-sm ${test.startsWith("Prueba enviada") ? "text-emerald-700" : "text-rose-700"}`}>
+          <p className={`mt-3 text-sm ${test.startsWith("Prueba enviada") ? "text-success-700" : "text-danger-700"}`}>
             {test}
           </p>
         ) : null}

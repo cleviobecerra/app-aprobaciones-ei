@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState } from "react";
 import { loginAction } from "@/lib/actions/auth";
@@ -15,7 +15,7 @@ export function LoginForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="email" className="ui-label">
           Correo
         </label>
         <input
@@ -24,23 +24,17 @@ export function LoginForm() {
           type="email"
           required
           defaultValue="ana.garcia@eisa.local"
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none ring-blue-600 focus:ring-2"
+          className="ui-input"
         />
       </div>
       <div>
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="password" className="ui-label">
           Contraseña
         </label>
         <PasswordInput id="password" name="password" required defaultValue="demo1234" autoComplete="current-password" />
       </div>
-      {state?.error ? (
-        <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-60"
-      >
+      {state?.error ? <p className="ui-alert ui-alert-danger">{state.error}</p> : null}
+      <button type="submit" disabled={pending} className="ui-btn ui-btn-primary ui-btn-block">
         {pending ? "Ingresando…" : "Entrar"}
       </button>
       <div className="grid grid-cols-2 gap-2">
@@ -54,14 +48,14 @@ export function LoginForm() {
               if (email) email.value = demo.email;
               if (password) password.value = "demo1234";
             }}
-            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-left hover:border-blue-200 hover:bg-blue-50"
+            className="rounded-xl border border-line bg-soft px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50"
           >
-            <span className="block text-sm font-medium text-slate-800">{demo.label}</span>
-            <span className="text-xs text-slate-500">{demo.hint}</span>
+            <span className="block text-sm font-medium">{demo.label}</span>
+            <span className="text-xs text-subtle">{demo.hint}</span>
           </button>
         ))}
       </div>
-      <p className="text-xs text-slate-500">Contraseña de ambos: demo1234</p>
+      <p className="text-xs text-subtle">Contraseña de ambos: demo1234</p>
     </form>
   );
 }

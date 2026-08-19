@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
 import { formatDate } from "@/lib/labels";
 
@@ -15,18 +15,16 @@ export function RequestCard({ id, title, status, createdBy, createdAt, waitingOn
   return (
     <Link
       href={`/requests/${id}`}
-      className="block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
+      className="ui-card ui-card-hover block"
     >
       <div className="flex items-start justify-between gap-3">
-        <h3 className="font-semibold text-slate-900">{title}</h3>
+        <h3 className="font-medium text-fg">{title}</h3>
         <StatusBadge status={status} />
       </div>
-      <p className="mt-2 text-sm text-slate-500">
+      <p className="mt-2 text-sm text-subtle">
         {createdBy} · {formatDate(createdAt)}
       </p>
-      {waitingOn ? (
-        <p className="mt-3 text-sm text-blue-700">Esperando a: {waitingOn}</p>
-      ) : null}
+      {waitingOn ? <p className="mt-3 text-sm text-primary-700">Esperando a: {waitingOn}</p> : null}
     </Link>
   );
 }

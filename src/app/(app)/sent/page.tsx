@@ -18,6 +18,7 @@ export default async function SentPage({
       scope={{ createdById: user.id }}
       showCreator={false}
       emptyLabel="Todavía no has creado solicitudes."
+      action={{ href: "/requests/new", label: "Nueva solicitud" }}
     />
   );
 }

@@ -25,7 +25,7 @@ export function ActionsPanel({
 
   if (!isOwner) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500">
+      <div className="ui-card text-sm text-subtle">
         Solo el autor puede enviar o cancelar esta solicitud. Los destinatarios entran con el enlace
         de su correo.
       </div>
@@ -33,14 +33,14 @@ export function ActionsPanel({
   }
 
   return (
-    <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="font-semibold">Acciones</h2>
+    <div className="ui-card space-y-3">
+      <h2 className="font-medium">Acciones</h2>
       {status === "DRAFT" ? (
         <button
           type="button"
           disabled={busy}
           onClick={() => run(() => sendDraftAction(requestId))}
-          className="w-full rounded-xl bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-60"
+          className="ui-btn ui-btn-primary ui-btn-block"
         >
           Enviar enlaces por correo
         </button>
@@ -50,7 +50,7 @@ export function ActionsPanel({
           type="button"
           disabled={busy}
           onClick={() => run(() => resendInviteAction(requestId))}
-          className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+          className="ui-btn ui-btn-secondary ui-btn-block"
         >
           Reenviar correos pendientes
         </button>
@@ -60,12 +60,12 @@ export function ActionsPanel({
           type="button"
           disabled={busy}
           onClick={() => run(() => cancelAction(requestId))}
-          className="w-full rounded-xl border border-rose-200 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60"
+          className="ui-btn ui-btn-danger ui-btn-block"
         >
           Cancelar solicitud
         </button>
       ) : null}
-      {message ? <p className="text-sm text-rose-700">{message}</p> : null}
+      {message ? <p className="ui-alert ui-alert-danger">{message}</p> : null}
     </div>
   );
 }

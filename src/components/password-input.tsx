@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -20,7 +20,7 @@ export function PasswordInput({
   defaultValue,
   placeholder,
   autoComplete,
-  className = "w-full rounded-xl border border-slate-200 bg-white py-2.5 pr-11 pl-3 text-sm outline-none ring-blue-600 focus:ring-2",
+  className = "ui-input pr-11",
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
 
@@ -39,7 +39,7 @@ export function PasswordInput({
       <button
         type="button"
         onClick={() => setVisible((value) => !value)}
-        className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-lg p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+        className="ui-iconbtn absolute top-1/2 right-1 h-8 w-8 min-h-8 min-w-8 -translate-y-1/2"
         aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
         title={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
       >

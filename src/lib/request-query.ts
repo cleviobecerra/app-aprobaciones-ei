@@ -90,20 +90,18 @@ export function requestWhere(
   }
 
   if (filters.q) {
+    const q = filters.q;
     where.OR = [
-      { title: { contains: filters.q, mode: "insensitive" } },
-      { description: { contains: filters.q, mode: "insensitive" } },
-      { createdBy: { name: { contains: filters.q, mode: "insensitive" } } },
-      { createdBy: { email: { contains: filters.q, mode: "insensitive" } } },
+      { title: { contains: q } },
+      { description: { contains: q } },
+      { createdBy: { name: { contains: q } } },
+      { createdBy: { email: { contains: q } } },
       {
         stages: {
           some: {
             tasks: {
               some: {
-                OR: [
-                  { name: { contains: filters.q, mode: "insensitive" } },
-                  { email: { contains: filters.q, mode: "insensitive" } },
-                ],
+                OR: [{ name: { contains: q } }, { email: { contains: q } }],
               },
             },
           },

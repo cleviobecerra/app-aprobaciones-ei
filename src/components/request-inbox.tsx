@@ -1,3 +1,4 @@
+﻿import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { RequestFilters } from "@/components/request-filters";
 import { RequestTable } from "@/components/request-table";
@@ -18,6 +19,7 @@ export async function RequestInbox({
   scope,
   showCreator,
   emptyLabel,
+  action,
 }: {
   title: string;
   description: string;
@@ -26,6 +28,7 @@ export async function RequestInbox({
   scope?: { createdById: string };
   showCreator: boolean;
   emptyLabel: string;
+  action?: { href: string; label: string };
 }) {
   const filters = parseRequestFilters(searchParams);
   const scopedFilters: RequestListFilters = scope
@@ -63,8 +66,17 @@ export async function RequestInbox({
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">{title}</h1>
-      <p className="mt-1 mb-6 text-sm text-slate-500">{description}</p>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="ui-page-title">{title}</h1>
+          <p className="ui-page-desc">{description}</p>
+        </div>
+        {action ? (
+          <Link href={action.href} className="ui-btn ui-btn-primary w-full shrink-0 sm:w-auto">
+            {action.label}
+          </Link>
+        ) : null}
+      </div>
       <RequestFilters
         basePath={basePath}
         filters={filters}

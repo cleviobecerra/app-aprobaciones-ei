@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
@@ -37,11 +37,11 @@ export function DeleteUserButton({
         onClick={onDelete}
         disabled={disabled || pending}
         title={disabled ? "No puedes eliminar tu propia cuenta" : "Eliminar cuenta"}
-        className="rounded-lg p-2 text-rose-600 hover:bg-rose-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
+        className="ui-iconbtn text-danger hover:bg-danger-50 disabled:cursor-not-allowed disabled:text-line disabled:hover:bg-transparent"
       >
         <Trash2 className="size-4" />
       </button>
-      {error ? <p className="mt-1 text-xs text-rose-700">{error}</p> : null}
+      {error ? <p className="mt-1 text-xs text-danger-700">{error}</p> : null}
     </div>
   );
 }

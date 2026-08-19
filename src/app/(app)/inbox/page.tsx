@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+﻿import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/labels";
 import { isAdmin } from "@/lib/roles";
@@ -15,36 +15,36 @@ export default async function InboxPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Correos y enlaces</h1>
-      <p className="mt-1 mb-6 text-sm text-slate-500">
+      <h1 className="ui-page-title">Correos y enlaces</h1>
+      <p className="ui-page-desc mb-6">
         Solo el administrador puede ver y abrir los enlaces de acceso enviados a los destinatarios.
       </p>
       {emails.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center text-slate-500">
+        <div className="ui-empty">
           Todavía no se generó ningún correo.
         </div>
       ) : (
         <div className="space-y-3">
           {emails.map((email) => (
-            <article key={email.id} className="rounded-2xl border border-slate-200 bg-white p-5">
+            <article key={email.id} className="ui-card ui-card-hover">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-slate-900">{email.subject}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="font-medium text-fg">{email.subject}</p>
+                  <p className="text-sm text-subtle">
                     Para {email.toName || email.toEmail} · {email.toEmail}
                   </p>
-                  <p className="text-xs text-slate-400">{email.request.title}</p>
+                  <p className="text-xs text-subtle">{email.request.title}</p>
                 </div>
                 <span
-                  className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    email.delivered ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-800"
+                  className={`ui-chip ${
+                    email.delivered ? "bg-success-50 text-success-700" : "bg-warning-50 text-warning-700"
                   }`}
                 >
                   {email.delivered ? "Enviado" : "No enviado"}
                 </span>
               </div>
-              <p className="mt-2 text-xs text-slate-400">{formatDate(email.createdAt)}</p>
-              {email.error ? <p className="mt-1 text-xs text-rose-700">{email.error}</p> : null}
+              <p className="mt-2 text-xs text-subtle">{formatDate(email.createdAt)}</p>
+              {email.error ? <p className="mt-1 text-xs text-danger-700">{email.error}</p> : null}
               <a
                 href={(() => {
                   try {
@@ -53,7 +53,7 @@ export default async function InboxPage() {
                     return email.accessUrl;
                   }
                 })()}
-                className="mt-3 inline-flex text-sm font-medium text-blue-700 hover:underline"
+                className="ui-link mt-3 inline-flex text-sm font-medium"
               >
                 Abrir enlace de aprobación
               </a>
