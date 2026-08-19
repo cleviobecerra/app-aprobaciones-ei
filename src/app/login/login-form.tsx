@@ -7,6 +7,7 @@ import { PasswordInput } from "@/components/password-input";
 const demos = [
   { email: "admin@eisa.local", label: "Administrador", hint: "Crea cuentas" },
   { email: "ana.garcia@eisa.local", label: "Solicitante", hint: "Envía aprobaciones" },
+  { email: "auditor@eisa.local", label: "Auditor", hint: "Consulta todas" },
 ];
 
 export function LoginForm() {
@@ -37,7 +38,7 @@ export function LoginForm() {
       <button type="submit" disabled={pending} className="ui-btn ui-btn-primary ui-btn-block">
         {pending ? "Ingresando…" : "Entrar"}
       </button>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {demos.map((demo) => (
           <button
             key={demo.email}
@@ -55,7 +56,7 @@ export function LoginForm() {
           </button>
         ))}
       </div>
-      <p className="text-xs text-subtle">Contraseña de ambos: demo1234</p>
+      <p className="text-xs text-subtle">Contraseña de los tres perfiles: demo1234</p>
     </form>
   );
 }

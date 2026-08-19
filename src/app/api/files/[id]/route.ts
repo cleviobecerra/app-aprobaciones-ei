@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { fileDisposition, readRequestFile } from "@/lib/files";
+import { canViewAllRequests } from "@/lib/roles";
 import { userOwnsRequest } from "@/lib/workflow";
 
 export async function GET(
@@ -13,7 +14,7 @@ export async function GET(
   const user = await getSessionUser();
 
   let allowed = false;
-  if (user && (user.role === "ADMIN" || (await userOwnsRequest(user.id, id)))) {
+  if (user && (canViewAllRequests(user.role) || (await userOwnsRequest(user.id, id)))) {
     allowed = true;
   } else if (token) {
     const task = await prisma.approvalTask.findUnique({

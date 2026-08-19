@@ -237,6 +237,11 @@ button.ui-input {
   color: var(--foreground);
 }
 
+.ui-iconbtn:active:not(:disabled) {
+  background: var(--soft);
+  color: var(--foreground);
+}
+
 .ui-card {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -341,4 +346,38 @@ button.ui-input {
     radial-gradient(900px 420px at 110% 10%, rgba(14, 165, 233, 0.14), transparent 50%),
     radial-gradient(700px 400px at 50% 120%, rgba(79, 70, 229, 0.1), transparent 45%),
     var(--background);
+}
+
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  background: var(--primary-200);
+}
+
+.nav-progress::after {
+  content: "";
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--primary);
+  animation: nav-progress-slide 0.9s ease-in-out infinite;
+}
+
+@keyframes nav-progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.ui-card-hover:active {
+  transform: translateY(0);
+  background: var(--soft);
 }

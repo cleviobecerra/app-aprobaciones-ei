@@ -6,6 +6,7 @@ import { compare } from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { clearSession, createSession } from "@/lib/auth";
 import { describeDbError, ensureDemoUsers } from "@/lib/bootstrap";
+import { homePath } from "@/lib/roles";
 
 export async function loginAction(_prev: { error?: string } | null, formData: FormData) {
   const email = String(formData.get("email") || "")
@@ -35,7 +36,7 @@ export async function loginAction(_prev: { error?: string } | null, formData: Fo
     }
 
     await createSession(user.id);
-    redirect(user.role === "ADMIN" ? "/users" : "/sent");
+    redirect(homePath(user.role));
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error("loginAction", error);

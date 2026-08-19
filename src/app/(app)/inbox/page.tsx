@@ -1,12 +1,12 @@
 ﻿import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/labels";
-import { isAdmin } from "@/lib/roles";
+import { isAdmin, homePath } from "@/lib/roles";
 import { redirect } from "next/navigation";
 
 export default async function InboxPage() {
   const user = await requireUser();
-  if (!isAdmin(user.role)) redirect("/sent");
+  if (!isAdmin(user.role)) redirect(homePath(user.role));
 
   const emails = await prisma.outboundEmail.findMany({
     include: { request: true },

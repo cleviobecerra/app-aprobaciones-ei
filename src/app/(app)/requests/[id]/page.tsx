@@ -3,10 +3,10 @@ import { FileText } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { isMailConfigured } from "@/lib/mail";
-import { auditActionLabel, formatDate } from "@/lib/labels";
+import { auditActionLabel, formatDate, taskStatusLabel } from "@/lib/labels";
 import { StatusBadge } from "@/components/status-badge";
 import { FlowTimeline } from "@/components/flow-timeline";
-import { isAdmin } from "@/lib/roles";
+import { canCreateRequests, canSeeAccessLinks, canViewAllRequests, isAuditor } from "@/lib/roles";
 import { InviteLinks } from "@/components/invite-links";
 import { ActionsPanel } from "./actions-panel";
 
@@ -19,7 +19,7 @@ export default async function RequestDetailPage({
   const { id } = await params;
 
   const request = await prisma.approvalRequest.findFirst({
-    where: isAdmin(user.role) ? { id } : { id, createdById: user.id },
+    where: canViewAllRequests(user.role) ? { id } : { id, createdById: user.id },
     include: {
       createdBy: true,
       stages: {
@@ -36,6 +36,7 @@ export default async function RequestDetailPage({
 
   const pendingInvites = request.stages.flatMap((stage) =>
     stage.tasks.map((task) => ({
+      id: task.id,
       email: task.email,
       name: task.name,
       accessToken: task.accessToken,
@@ -46,7 +47,7 @@ export default async function RequestDetailPage({
   const isPreviewable = Boolean(
     request.storedName && request.mimeType && (request.mimeType.startsWith("image/") || request.mimeType === "application/pdf"),
   );
-  const smtpReady = await isMailConfigured();
+  const smtpReady = canSeeAccessLinks(user.role) ? await isMailConfigured() : false;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
@@ -107,8 +108,13 @@ export default async function RequestDetailPage({
       </div>
 
       <aside className="space-y-6">
-        <ActionsPanel requestId={request.id} status={request.status} isOwner={request.createdById === user.id} />
-        {isAdmin(user.role) ? (
+        <ActionsPanel
+          requestId={request.id}
+          status={request.status}
+          isOwner={canCreateRequests(user.role) && request.createdById === user.id}
+          readOnly={isAuditor(user.role)}
+        />
+        {canSeeAccessLinks(user.role) ? (
           <section className="ui-card">
             <h2 className="mb-1 font-semibold">Enlaces de acceso</h2>
             <p className="mb-4 text-xs text-subtle">
@@ -121,10 +127,26 @@ export default async function RequestDetailPage({
         ) : (
           <section className="ui-card">
             <h2 className="mb-1 font-semibold">Destinatarios</h2>
-            <p className="text-sm text-muted">
-              El enlace de aprobación solo llega al correo de cada persona. El solicitante no puede
-              verlo ni copiarlo.
-            </p>
+            {isAuditor(user.role) ? (
+              pendingInvites.length === 0 ? (
+                <p className="text-sm text-muted">Esta solicitud no tiene destinatarios.</p>
+              ) : (
+                <ul className="space-y-2 text-sm">
+                  {pendingInvites.map((invite) => (
+                    <li key={invite.id} className="flex flex-col gap-0.5">
+                      <span className="font-medium text-fg">{invite.name || invite.email}</span>
+                      <span className="text-muted">{invite.email}</span>
+                      <span className="text-xs text-subtle">{taskStatusLabel[invite.status] ?? invite.status}</span>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : (
+              <p className="text-sm text-muted">
+                El enlace de aprobación solo llega al correo de cada persona. El solicitante no puede
+                verlo ni copiarlo.
+              </p>
+            )}
           </section>
         )}
         <section className="ui-card bg-soft/50">

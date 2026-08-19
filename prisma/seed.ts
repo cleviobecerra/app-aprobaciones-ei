@@ -36,6 +36,16 @@ async function main() {
     },
   });
 
+  await prisma.user.create({
+    data: {
+      email: "auditor@eisa.local",
+      name: "Auditor",
+      area: "Control interno",
+      role: "AUDITOR",
+      passwordHash: hashSync("demo1234", 10),
+    },
+  });
+
   const sequential = await prisma.approvalRequest.create({
     data: {
       title: "Contrato de servicios Q3",
@@ -271,8 +281,10 @@ async function main() {
   });
 
   console.log("Listo.");
-  console.log("Quien envía: ana.garcia@eisa.local / demo1234");
-  console.log("Los aprobadores entran con el enlace del correo (o desde Correos, si SMTP no está configurado).");
+  console.log("Administrador: admin@eisa.local / demo1234");
+  console.log("Solicitante:   ana.garcia@eisa.local / demo1234");
+  console.log("Auditor:       auditor@eisa.local / demo1234");
+  console.log("Los aprobadores entran con el enlace del correo (o desde Enlaces de acceso, si SMTP no está configurado).");
 }
 
 main()

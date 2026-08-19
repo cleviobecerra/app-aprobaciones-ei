@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtVerify, SignJWT } from "jose";
 import { prisma } from "./db";
+import { canViewAllRequests, homePath, isAdmin } from "./roles";
 
 const COOKIE = "session";
 
@@ -71,7 +72,13 @@ export async function requireUser() {
 
 export async function requireAdmin() {
   const user = await requireUser();
-  if (user.role !== "ADMIN") redirect("/sent");
+  if (!isAdmin(user.role)) redirect(homePath(user.role));
+  return user;
+}
+
+export async function requireAllRequestsAccess() {
+  const user = await requireUser();
+  if (!canViewAllRequests(user.role)) redirect(homePath(user.role));
   return user;
 }
 

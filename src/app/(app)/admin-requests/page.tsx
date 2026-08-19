@@ -1,23 +1,30 @@
-import { requireAdmin } from "@/lib/auth";
+import { requireAllRequestsAccess } from "@/lib/auth";
 import { RequestInbox } from "@/components/request-inbox";
+import { canCreateRequests, isAuditor } from "@/lib/roles";
 
 export default async function AllRequestsPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  await requireAdmin();
+  const user = await requireAllRequestsAccess();
   const params = await searchParams;
 
   return (
     <RequestInbox
       title="Todas las solicitudes"
-      description="Vista de administrador: todas las solicitudes del sistema, con filtros de búsqueda, estado, fecha y solicitante."
+      description={
+        isAuditor(user.role)
+          ? "Vista de auditoría: todas las solicitudes del sistema, con filtros de búsqueda, estado, fecha y solicitante."
+          : "Vista de administrador: todas las solicitudes del sistema, con filtros de búsqueda, estado, fecha y solicitante."
+      }
       basePath="/admin-requests"
       searchParams={params}
       showCreator
       emptyLabel="No hay solicitudes todavía."
-      action={{ href: "/requests/new", label: "Nueva solicitud" }}
+      action={
+        canCreateRequests(user.role) ? { href: "/requests/new", label: "Nueva solicitud" } : undefined
+      }
     />
   );
 }

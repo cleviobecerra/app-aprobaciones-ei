@@ -1,29 +1,59 @@
 import { hash } from "bcryptjs";
 import { prisma } from "./db";
 
+const DEMO_PASSWORD = "demo1234";
+
+async function ensureAuditorUser() {
+  const exists = await prisma.user.findUnique({
+    where: { email: "auditor@eisa.local" },
+    select: { id: true },
+  });
+  if (exists) return;
+
+  await prisma.user.create({
+    data: {
+      email: "auditor@eisa.local",
+      name: "Auditor",
+      area: "Control interno",
+      role: "AUDITOR",
+      passwordHash: await hash(DEMO_PASSWORD, 10),
+    },
+  });
+}
+
 export async function ensureDemoUsers() {
   const count = await prisma.user.count();
-  if (count > 0) return;
+  if (count === 0) {
+    const passwordHash = await hash(DEMO_PASSWORD, 10);
+    await prisma.user.createMany({
+      data: [
+        {
+          email: "admin@eisa.local",
+          name: "Administrador",
+          area: "TI",
+          role: "ADMIN",
+          passwordHash,
+        },
+        {
+          email: "ana.garcia@eisa.local",
+          name: "Ana García",
+          area: "Compras",
+          role: "SOLICITANTE",
+          passwordHash,
+        },
+        {
+          email: "auditor@eisa.local",
+          name: "Auditor",
+          area: "Control interno",
+          role: "AUDITOR",
+          passwordHash,
+        },
+      ],
+    });
+    return;
+  }
 
-  const passwordHash = await hash("demo1234", 10);
-  await prisma.user.createMany({
-    data: [
-      {
-        email: "admin@eisa.local",
-        name: "Administrador",
-        area: "TI",
-        role: "ADMIN",
-        passwordHash,
-      },
-      {
-        email: "ana.garcia@eisa.local",
-        name: "Ana García",
-        area: "Compras",
-        role: "SOLICITANTE",
-        passwordHash,
-      },
-    ],
-  });
+  await ensureAuditorUser();
 }
 
 export function describeDbError(error: unknown) {

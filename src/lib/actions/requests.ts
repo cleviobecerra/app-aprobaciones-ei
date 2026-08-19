@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { createAccessToken, isValidEmail, normalizeEmail } from "@/lib/tokens";
 import { saveRequestFile } from "@/lib/files";
 import { cancelRequestFlow, decideByToken, notifyPendingInvites, sendRequestFlow } from "@/lib/workflow";
+import { canCreateRequests } from "@/lib/roles";
 
 type RecipientInput = { name: string; email: string };
 type StageInput = { name: string; mode: "ALL" | "ANY"; recipients: RecipientInput[] };
@@ -60,6 +61,9 @@ export async function createRequestAction(
   formData: FormData,
 ) {
   const user = await requireUser();
+  if (!canCreateRequests(user.role)) {
+    return { error: "Tu perfil no puede crear ni enviar solicitudes." };
+  }
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
   const intent = String(formData.get("intent") || "draft");
@@ -138,6 +142,9 @@ export async function createRequestAction(
 export async function sendDraftAction(requestId: string) {
   try {
     const user = await requireUser();
+    if (!canCreateRequests(user.role)) {
+      return { error: "Tu perfil no puede enviar solicitudes." };
+    }
     await sendRequestFlow(requestId, user.id);
     refresh(requestId);
     return { ok: true as const };
@@ -149,6 +156,9 @@ export async function sendDraftAction(requestId: string) {
 export async function resendInviteAction(requestId: string) {
   try {
     const user = await requireUser();
+    if (!canCreateRequests(user.role)) {
+      return { error: "Tu perfil no puede reenviar solicitudes." };
+    }
     const request = await prisma.approvalRequest.findFirst({
       where: { id: requestId, createdById: user.id },
     });
@@ -183,6 +193,9 @@ export async function decideByTokenAction(
 export async function cancelAction(requestId: string) {
   try {
     const user = await requireUser();
+    if (!canCreateRequests(user.role)) {
+      return { error: "Tu perfil no puede cancelar solicitudes." };
+    }
     await cancelRequestFlow(requestId, user.id);
     refresh(requestId);
     return { ok: true as const };

@@ -49,7 +49,7 @@ export function RequestTable({
         {requests.map((request) => {
           const waiting = waitingOn(request);
           return (
-            <Link key={request.id} href={`/requests/${request.id}`} className="ui-card ui-card-hover block">
+            <Link key={request.id} href={`/requests/${request.id}`} className="ui-card ui-card-hover block touch-manipulation">
               <div className="flex items-start justify-between gap-3">
                 <h3 className="min-w-0 break-words font-medium text-fg">{request.title}</h3>
                 <span className="shrink-0">

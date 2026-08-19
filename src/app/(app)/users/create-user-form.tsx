@@ -19,6 +19,7 @@ export function CreateUserForm() {
         defaultValue="SOLICITANTE"
         options={[
           { value: "SOLICITANTE", label: "Solicitante" },
+          { value: "AUDITOR", label: "Auditor" },
           { value: "ADMIN", label: "Administrador" },
         ]}
       />

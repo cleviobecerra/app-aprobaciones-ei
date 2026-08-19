@@ -4,7 +4,7 @@ import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { ROLES } from "@/lib/roles";
+import { ROLES, parseAssignableRole } from "@/lib/roles";
 
 export async function createUserAction(
   _prev: { error?: string; ok?: boolean } | null,
@@ -16,7 +16,7 @@ export async function createUserAction(
   const area = String(formData.get("area") || "").trim();
   const password = String(formData.get("password") || "");
   const role = String(formData.get("role") || ROLES.SOLICITANTE);
-  const safeRole = role === ROLES.ADMIN ? ROLES.ADMIN : ROLES.SOLICITANTE;
+  const safeRole = parseAssignableRole(role);
 
   if (!name || !email || !password) {
     return { error: "Nombre, correo y contraseña son obligatorios." };

@@ -15,8 +15,9 @@ export default async function UsersPage() {
       <div>
         <h1 className="ui-page-title">Usuarios</h1>
         <p className="ui-page-desc mb-6">
-          El administrador crea cuentas y puede restablecer contraseñas. Quien aprueba no necesita
-          cuenta: se invita por correo.
+          El administrador crea cuentas (solicitante, auditor o administrador) y puede restablecer
+          contraseñas. El auditor consulta todas las solicitudes, sin crear usuarios ni enviar. Quien
+          aprueba no necesita cuenta: se invita por correo.
         </p>
         <div className="space-y-3 md:hidden">
           {users.map((user) => (

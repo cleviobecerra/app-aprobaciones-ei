@@ -29,9 +29,22 @@ async function main() {
     },
   });
 
+  await prisma.user.upsert({
+    where: { email: "auditor@eisa.local" },
+    update: { role: "AUDITOR", name: "Auditor", area: "Control interno" },
+    create: {
+      email: "auditor@eisa.local",
+      name: "Auditor",
+      area: "Control interno",
+      role: "AUDITOR",
+      passwordHash,
+    },
+  });
+
   console.log("Perfiles listos:");
   console.log("- Administrador: admin@eisa.local / demo1234");
   console.log("- Solicitante:   ana.garcia@eisa.local / demo1234");
+  console.log("- Auditor:       auditor@eisa.local / demo1234");
 }
 
 main()

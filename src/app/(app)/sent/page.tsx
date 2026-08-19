@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { RequestInbox } from "@/components/request-inbox";
+import { homePath, isAuditor } from "@/lib/roles";
 
 export default async function SentPage({
   searchParams,
@@ -7,6 +9,7 @@ export default async function SentPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
+  if (isAuditor(user.role)) redirect(homePath(user.role));
   const params = await searchParams;
 
   return (

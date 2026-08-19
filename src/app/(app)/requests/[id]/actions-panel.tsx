@@ -7,10 +7,12 @@ export function ActionsPanel({
   requestId,
   status,
   isOwner,
+  readOnly = false,
 }: {
   requestId: string;
   status: string;
   isOwner: boolean;
+  readOnly?: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -21,6 +23,15 @@ export function ActionsPanel({
     const result = await callback();
     if (result.error) setMessage(result.error);
     setBusy(false);
+  }
+
+  if (readOnly) {
+    return (
+      <div className="ui-card text-sm text-subtle">
+        Perfil de auditoría: puedes consultar todas las solicitudes, sin enviar, reenviar ni
+        cancelar.
+      </div>
+    );
   }
 
   if (!isOwner) {
