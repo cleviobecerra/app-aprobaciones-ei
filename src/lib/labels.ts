@@ -51,12 +51,44 @@ export const auditActionLabel: Record<string, string> = {
   CANCELLED: "Canceló la solicitud",
 };
 
+export const APP_TIME_ZONE = "America/Santiago";
+
 export function formatDate(value: Date | string | null | undefined) {
   if (!value) return "—";
-  return new Intl.DateTimeFormat("es", {
+  return new Intl.DateTimeFormat("es-CL", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: APP_TIME_ZONE,
   }).format(new Date(value));
+}
+
+function timeZoneOffsetMs(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((part) => part.type === type)?.value ?? "0");
+  const asUtc = Date.UTC(value("year"), value("month") - 1, value("day"), value("hour"), value("minute"), value("second"));
+  return asUtc - date.getTime();
+}
+
+export function chileDayBoundary(dateOnly: string, endOfDay: boolean) {
+  const clock = endOfDay ? "23:59:59.999" : "00:00:00.000";
+  const asUtc = new Date(`${dateOnly}T${clock}Z`);
+  const firstOffset = timeZoneOffsetMs(asUtc, APP_TIME_ZONE);
+  let instant = new Date(asUtc.getTime() - firstOffset);
+  const secondOffset = timeZoneOffsetMs(instant, APP_TIME_ZONE);
+  if (secondOffset !== firstOffset) {
+    instant = new Date(asUtc.getTime() - secondOffset);
+  }
+  return instant;
 }
 
 export function initials(name: string) {

@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { REQUEST_STATUS } from "@/lib/labels";
+import { REQUEST_STATUS, chileDayBoundary } from "@/lib/labels";
 
 export const REQUEST_STATUS_FILTERS = [
   REQUEST_STATUS.DRAFT,
@@ -83,8 +83,8 @@ export function requestWhere(
 
   if (filters.from || filters.to) {
     const range: Prisma.DateTimeFilter = {};
-    if (filters.from) range.gte = new Date(`${filters.from}T00:00:00.000-04:00`);
-    if (filters.to) range.lte = new Date(`${filters.to}T23:59:59.999-04:00`);
+    if (filters.from) range.gte = chileDayBoundary(filters.from, false);
+    if (filters.to) range.lte = chileDayBoundary(filters.to, true);
     if (filters.dateField === "updated") where.updatedAt = range;
     else where.createdAt = range;
   }

@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/labels";
 import { roleLabel } from "@/lib/roles";
 import { CreateUserForm } from "./create-user-form";
 import { DeleteUserButton } from "./delete-user-button";
+import { ResetPasswordButton } from "./reset-password-button";
 
 export default async function UsersPage() {
   const admin = await requireAdmin();
@@ -14,8 +15,8 @@ export default async function UsersPage() {
       <div>
         <h1 className="ui-page-title">Usuarios</h1>
         <p className="ui-page-desc mb-6">
-          El administrador crea cuentas de solicitante. Quien aprueba no necesita cuenta: se invita
-          por correo.
+          El administrador crea cuentas y puede restablecer contraseñas. Quien aprueba no necesita
+          cuenta: se invita por correo.
         </p>
         <div className="space-y-3 md:hidden">
           {users.map((user) => (
@@ -28,11 +29,14 @@ export default async function UsersPage() {
                     {roleLabel[user.role] ?? user.role} · {user.area || "Sin área"} · {formatDate(user.createdAt)}
                   </p>
                 </div>
-                <DeleteUserButton
-                  userId={user.id}
-                  userName={user.name}
-                  disabled={user.id === admin.id}
-                />
+                <div className="flex shrink-0 items-start">
+                  <ResetPasswordButton userId={user.id} userName={user.name} />
+                  <DeleteUserButton
+                    userId={user.id}
+                    userName={user.name}
+                    disabled={user.id === admin.id}
+                  />
+                </div>
               </div>
             </article>
           ))}
@@ -60,11 +64,14 @@ export default async function UsersPage() {
                     <td className="px-4 py-3">{roleLabel[user.role] ?? user.role}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-subtle">{formatDate(user.createdAt)}</td>
                     <td className="px-4 py-3">
-                      <DeleteUserButton
-                        userId={user.id}
-                        userName={user.name}
-                        disabled={user.id === admin.id}
-                      />
+                      <div className="flex items-center justify-end">
+                        <ResetPasswordButton userId={user.id} userName={user.name} />
+                        <DeleteUserButton
+                          userId={user.id}
+                          userName={user.name}
+                          disabled={user.id === admin.id}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}

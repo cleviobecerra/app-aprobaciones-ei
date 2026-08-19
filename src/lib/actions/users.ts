@@ -73,3 +73,22 @@ export async function deleteUserAction(userId: string) {
   revalidatePath("/admin-requests");
   return { ok: true as const };
 }
+
+export async function resetUserPasswordAction(userId: string, password: string) {
+  await requireAdmin();
+  const next = password.trim();
+  if (next.length < 6) {
+    return { error: "La contraseña debe tener al menos 6 caracteres." };
+  }
+
+  const target = await prisma.user.findUnique({ where: { id: userId } });
+  if (!target) return { error: "La cuenta no existe." };
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: await hash(next, 10) },
+  });
+
+  revalidatePath("/users");
+  return { ok: true as const };
+}
