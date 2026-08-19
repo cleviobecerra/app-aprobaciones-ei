@@ -63,7 +63,7 @@ export default async function PublicApprovePage({
           <h2 className="mb-4 font-semibold">Documento</h2>
           {request.storedName ? (
             <div>
-              <a href={fileHref} className="ui-link inline-flex items-center gap-2 text-sm font-medium">
+              <a href={fileHref} download={request.fileName ?? true} className="ui-link inline-flex items-center gap-2 text-sm font-medium">
                 <FileText className="size-4" />
                 {request.fileName}
               </a>

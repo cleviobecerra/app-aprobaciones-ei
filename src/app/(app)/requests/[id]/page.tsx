@@ -71,6 +71,7 @@ export default async function RequestDetailPage({
             <div>
               <a
                 href={`/api/files/${request.id}`}
+                download={request.fileName ?? true}
                 className="ui-link inline-flex items-center gap-2 text-sm font-medium"
               >
                 <FileText className="size-4" />

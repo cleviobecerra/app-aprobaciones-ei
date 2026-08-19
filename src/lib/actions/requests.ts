@@ -1,7 +1,5 @@
 "use server";
 
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { revalidatePath } from "next/cache";
@@ -9,7 +7,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { createAccessToken, isValidEmail, normalizeEmail } from "@/lib/tokens";
-import { uploadDir } from "@/lib/paths";
+import { saveRequestFile } from "@/lib/files";
 import { cancelRequestFlow, decideByToken, notifyPendingInvites, sendRequestFlow } from "@/lib/workflow";
 
 type RecipientInput = { name: string; email: string };
@@ -41,16 +39,12 @@ async function saveUpload(file: File | null) {
     throw new Error("El archivo no puede superar 12 MB.");
   }
 
-  const dir = uploadDir();
-  await mkdir(dir, { recursive: true });
-  const ext = path.extname(file.name).slice(0, 12);
-  const storedName = `${randomUUID()}${ext}`;
-  await writeFile(path.join(dir, storedName), Buffer.from(await file.arrayBuffer()));
-
+  const ext = file.name.includes(".") ? file.name.slice(file.name.lastIndexOf(".")).slice(0, 12) : "";
   return {
     fileName: file.name,
-    storedName,
+    storedName: `${randomUUID()}${ext}`,
     mimeType: file.type || "application/octet-stream",
+    data: Buffer.from(await file.arrayBuffer()),
   };
 }
 
@@ -125,6 +119,10 @@ export async function createRequestAction(
         },
       },
     });
+
+    if (upload) {
+      await saveRequestFile(request.id, upload.data);
+    }
 
     if (intent === "send") {
       await sendRequestFlow(request.id, user.id);

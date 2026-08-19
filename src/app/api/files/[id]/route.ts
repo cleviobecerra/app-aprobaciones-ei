@@ -1,10 +1,8 @@
-import { readFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { fileDisposition, readRequestFile } from "@/lib/files";
 import { userOwnsRequest } from "@/lib/workflow";
-import { uploadDir } from "@/lib/paths";
 
 export async function GET(
   request: Request,
@@ -34,20 +32,21 @@ export async function GET(
     select: { storedName: true, fileName: true, mimeType: true },
   });
 
-  if (!doc?.storedName) {
+  if (!doc?.storedName && !doc?.fileName) {
     return NextResponse.json({ error: "Sin archivo" }, { status: 404 });
   }
 
-  const filePath = path.join(uploadDir(), doc.storedName);
-  try {
-    const data = await readFile(filePath);
-    return new NextResponse(data, {
-      headers: {
-        "Content-Type": doc.mimeType || "application/octet-stream",
-        "Content-Disposition": `inline; filename="${encodeURIComponent(doc.fileName ?? "documento")}"`,
-      },
-    });
-  } catch {
+  const data = await readRequestFile(id);
+  if (!data) {
     return NextResponse.json({ error: "Archivo no encontrado" }, { status: 404 });
   }
+
+  return new NextResponse(data, {
+    headers: {
+      "Content-Type": doc.mimeType || "application/octet-stream",
+      "Content-Disposition": fileDisposition(doc.fileName ?? "documento"),
+      "Content-Length": String(data.byteLength),
+      "Cache-Control": "private, max-age=0, must-revalidate",
+    },
+  });
 }

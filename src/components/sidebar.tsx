@@ -21,6 +21,7 @@ export function Sidebar({
     ? [
         { href: "/users", label: "Usuarios", icon: Users },
         { href: "/admin-requests", label: "Solicitudes", icon: Inbox },
+        { href: "/requests/new", label: "Nueva solicitud", icon: FilePlus2 },
         { href: "/inbox", label: "Enlaces de acceso", icon: Send },
         { href: "/settings", label: "Correo SMTP", icon: Settings },
       ]

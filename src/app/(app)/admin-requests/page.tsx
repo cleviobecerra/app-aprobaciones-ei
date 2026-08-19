@@ -17,6 +17,7 @@ export default async function AllRequestsPage({
       searchParams={params}
       showCreator
       emptyLabel="No hay solicitudes todavía."
+      action={{ href: "/requests/new", label: "Nueva solicitud" }}
     />
   );
 }

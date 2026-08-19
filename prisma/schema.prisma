@@ -40,6 +40,13 @@ model ApprovalRequest {
   stages      ApprovalStage[]
   auditEvents AuditEvent[]
   emails      OutboundEmail[]
+  attachment  RequestAttachment?
+}
+
+model RequestAttachment {
+  requestId String          @id
+  request   ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  data      Bytes
 }
 
 model ApprovalStage {
