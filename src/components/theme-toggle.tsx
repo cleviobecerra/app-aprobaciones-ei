@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { applyTheme, isDarkTheme, persistTheme, readStoredTheme } from "@/lib/theme";
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = "ui-iconbtn" }: { className?: string }) {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="ui-iconbtn"
+      className={className}
       title={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       onClick={toggle}

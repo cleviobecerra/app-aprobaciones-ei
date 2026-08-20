@@ -5,6 +5,7 @@ import { formatDate } from "@/lib/labels";
 import { StatusBadge } from "@/components/status-badge";
 import { BrandMark } from "@/components/brand-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { AppFooter } from "@/components/app-footer";
 import { PublicDecisionForm } from "./decision-form";
 
 export default async function PublicApprovePage({
@@ -34,7 +35,7 @@ export default async function PublicApprovePage({
   const fileHref = `/api/files/${request.id}?token=${encodeURIComponent(token)}`;
 
   return (
-    <main className="login-mesh min-h-dvh">
+    <main className="login-mesh flex min-h-dvh flex-col">
       <header className="border-b border-line/80 bg-surface/80 pt-[env(safe-area-inset-top)] backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-4">
           <BrandMark size="sm" />
@@ -46,7 +47,7 @@ export default async function PublicApprovePage({
         </div>
       </header>
 
-      <div className="mx-auto max-w-3xl space-y-6 p-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-8">
+      <div className="mx-auto max-w-3xl flex-1 space-y-6 p-4 py-6 sm:py-8">
         <section className="ui-card">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -95,6 +96,7 @@ export default async function PublicApprovePage({
           )}
         </section>
       </div>
+      <AppFooter />
     </main>
   );
 }

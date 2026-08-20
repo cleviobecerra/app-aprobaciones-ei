@@ -1,7 +1,35 @@
 import { hash } from "bcryptjs";
 import { prisma } from "./db";
+import { ROLES, roleLabel } from "./roles";
 
 const DEMO_PASSWORD = "demo1234";
+
+const LOGIN_ROLES = [ROLES.ADMIN, ROLES.SOLICITANTE, ROLES.AUDITOR] as const;
+
+export async function getLoginShortcuts() {
+  try {
+    const users = await prisma.user.findMany({
+      where: { role: { in: [...LOGIN_ROLES] } },
+      select: { email: true, role: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return LOGIN_ROLES.flatMap((role) => {
+      const user = users.find((item) => item.role === role);
+      if (!user) return [];
+      return [
+        {
+          email: user.email,
+          role,
+          label: roleLabel[role] ?? role,
+        },
+      ];
+    });
+  } catch (error) {
+    console.error("getLoginShortcuts", error);
+    return [];
+  }
+}
 
 async function ensureAuditorUser() {
   const exists = await prisma.user.findUnique({

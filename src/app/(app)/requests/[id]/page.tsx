@@ -3,9 +3,11 @@ import { FileText } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { isMailConfigured } from "@/lib/mail";
-import { auditActionLabel, formatDate, taskStatusLabel } from "@/lib/labels";
-import { StatusBadge } from "@/components/status-badge";
+import { REQUEST_STATUS, taskStatusLabel } from "@/lib/labels";
+import { AuditTrail } from "@/components/audit-trail";
+import { DownloadRequestPdfButton } from "@/components/download-request-pdf";
 import { FlowTimeline } from "@/components/flow-timeline";
+import { RequestInfoCard } from "@/components/request-info";
 import { canCreateRequests, canSeeAccessLinks, canViewAllRequests, isAuditor } from "@/lib/roles";
 import { InviteLinks } from "@/components/invite-links";
 import { ActionsPanel } from "./actions-panel";
@@ -48,23 +50,19 @@ export default async function RequestDetailPage({
     request.storedName && request.mimeType && (request.mimeType.startsWith("image/") || request.mimeType === "application/pdf"),
   );
   const smtpReady = canSeeAccessLinks(user.role) ? await isMailConfigured() : false;
+  const approved = request.status === REQUEST_STATUS.APPROVED;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
       <div className="space-y-6">
-        <header className="ui-card">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="text-sm text-subtle">Solicitud</p>
-              <h1 className="mt-1 text-xl font-semibold tracking-tight break-words sm:text-2xl">{request.title}</h1>
-            </div>
-            <StatusBadge status={request.status} />
-          </div>
-          <p className="mt-3 whitespace-pre-wrap text-muted">{request.description || "Sin descripción."}</p>
-          <p className="mt-4 text-sm text-subtle">
-            Creada por {request.createdBy.name} · {formatDate(request.createdAt)}
-          </p>
-        </header>
+        <RequestInfoCard
+          title={request.title}
+          description={request.description}
+          status={request.status}
+          createdByName={request.createdBy.name}
+          createdAt={request.createdAt}
+          actions={approved ? <DownloadRequestPdfButton requestId={request.id} /> : null}
+        />
 
         <section className="ui-card">
           <h2 className="mb-4 font-semibold">Documento</h2>
@@ -93,17 +91,7 @@ export default async function RequestDetailPage({
 
         <section className="ui-card">
           <h2 className="mb-2 font-semibold">Pista de auditoría</h2>
-          <ol className="space-y-3">
-            {request.auditEvents.map((event) => (
-              <li key={event.id} className="border-l-2 border-line pl-3">
-                <p className="text-sm font-medium text-fg">
-                  {event.actorName || event.actorEmail || "Sistema"} · {auditActionLabel[event.action] ?? event.action}
-                </p>
-                <p className="text-sm text-muted">{event.detail}</p>
-                <p className="text-xs text-subtle">{formatDate(event.createdAt)}</p>
-              </li>
-            ))}
-          </ol>
+          <AuditTrail events={request.auditEvents} />
         </section>
       </div>
 

@@ -39,7 +39,49 @@ export async function createUserAction(
   });
 
   revalidatePath("/users");
-  return { ok: true };
+  revalidatePath("/login");
+  return { ok: true, createdAt: Date.now() };
+}
+
+export async function updateUserAction(
+  userId: string,
+  input: { name: string; email: string; area: string; role: string },
+) {
+  const admin = await requireAdmin();
+  const name = input.name.trim();
+  const email = input.email.trim().toLowerCase();
+  const area = input.area.trim();
+  const role = parseAssignableRole(input.role);
+
+  if (!name || !email) {
+    return { error: "Nombre y correo son obligatorios." };
+  }
+
+  const target = await prisma.user.findUnique({ where: { id: userId } });
+  if (!target) return { error: "La cuenta no existe." };
+
+  if (target.role === ROLES.ADMIN && role !== ROLES.ADMIN) {
+    const admins = await prisma.user.count({ where: { role: ROLES.ADMIN } });
+    if (admins <= 1) {
+      return { error: "No se puede quitar el perfil de administrador al último administrador." };
+    }
+  }
+
+  const emailTaken = await prisma.user.findFirst({
+    where: { email, NOT: { id: userId } },
+    select: { id: true },
+  });
+  if (emailTaken) return { error: "Ese correo ya tiene una cuenta." };
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { name, email, area, role },
+  });
+
+  revalidatePath("/users");
+  revalidatePath("/login");
+  if (userId === admin.id) revalidatePath("/", "layout");
+  return { ok: true as const };
 }
 
 export async function deleteUserAction(userId: string) {
@@ -70,6 +112,7 @@ export async function deleteUserAction(userId: string) {
   });
 
   revalidatePath("/users");
+  revalidatePath("/login");
   revalidatePath("/admin-requests");
   return { ok: true as const };
 }
@@ -90,5 +133,6 @@ export async function resetUserPasswordAction(userId: string, password: string) 
   });
 
   revalidatePath("/users");
+  revalidatePath("/login");
   return { ok: true as const };
 }

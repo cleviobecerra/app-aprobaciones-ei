@@ -4,13 +4,15 @@ import { useActionState } from "react";
 import { loginAction } from "@/lib/actions/auth";
 import { PasswordInput } from "@/components/password-input";
 
-const demos = [
-  { email: "admin@eisa.local", label: "Administrador", hint: "Crea cuentas" },
-  { email: "ana.garcia@eisa.local", label: "Solicitante", hint: "Envía aprobaciones" },
-  { email: "auditor@eisa.local", label: "Auditor", hint: "Consulta todas" },
-];
+type LoginShortcut = { email: string; label: string };
 
-export function LoginForm() {
+export function LoginForm({
+  shortcuts,
+  defaultEmail,
+}: {
+  shortcuts: LoginShortcut[];
+  defaultEmail: string;
+}) {
   const [state, action, pending] = useActionState(loginAction, null);
 
   return (
@@ -24,7 +26,7 @@ export function LoginForm() {
           name="email"
           type="email"
           required
-          defaultValue="ana.garcia@eisa.local"
+          defaultValue={defaultEmail}
           className="ui-input"
         />
       </div>
@@ -38,25 +40,29 @@ export function LoginForm() {
       <button type="submit" disabled={pending} className="ui-btn ui-btn-primary ui-btn-block">
         {pending ? "Ingresando…" : "Entrar"}
       </button>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        {demos.map((demo) => (
-          <button
-            key={demo.email}
-            type="button"
-            onClick={() => {
-              const email = document.getElementById("email") as HTMLInputElement | null;
-              const password = document.getElementById("password") as HTMLInputElement | null;
-              if (email) email.value = demo.email;
-              if (password) password.value = "demo1234";
-            }}
-            className="rounded-xl border border-line bg-soft px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50"
-          >
-            <span className="block text-sm font-medium">{demo.label}</span>
-            <span className="text-xs text-subtle">{demo.hint}</span>
-          </button>
-        ))}
-      </div>
-      <p className="text-xs text-subtle">Contraseña de los tres perfiles: demo1234</p>
+      {shortcuts.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {shortcuts.map((demo) => (
+              <button
+                key={`${demo.label}-${demo.email}`}
+                type="button"
+                onClick={() => {
+                  const email = document.getElementById("email") as HTMLInputElement | null;
+                  const password = document.getElementById("password") as HTMLInputElement | null;
+                  if (email) email.value = demo.email;
+                  if (password) password.value = "demo1234";
+                }}
+                className="rounded-xl border border-line bg-soft px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50"
+              >
+                <span className="block text-sm font-medium">{demo.label}</span>
+                <span className="block truncate text-xs text-subtle">{demo.email}</span>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-subtle">Contraseña de los tres perfiles: demo1234</p>
+        </>
+      ) : null}
     </form>
   );
 }

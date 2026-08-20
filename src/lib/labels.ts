@@ -99,3 +99,17 @@ export function initials(name: string) {
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+export function requestPdfFileName(title: string) {
+  const slug = title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 72);
+  return `${slug || "solicitud"}-aprobada.pdf`;
+}
+
+export const APP_COPYRIGHT = `App Aprobaciones EI · Todos los derechos reservados ${new Date().getFullYear()}`;
+

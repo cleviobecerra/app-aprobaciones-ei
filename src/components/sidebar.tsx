@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { FilePlus2, Inbox, LogOut, Menu, Send, Settings, Users, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { BarChart3, FilePlus2, Inbox, LogOut, Menu, Send, Settings, Users, X } from "lucide-react";
 import { logoutAction } from "@/lib/actions/auth";
 import { initials } from "@/lib/labels";
 import { isAdmin, isAuditor, roleLabel } from "@/lib/roles";
@@ -25,16 +25,21 @@ function navForRole(role: string): NavItem[] {
     return [
       { href: "/users", label: "Usuarios", icon: Users },
       { href: "/admin-requests", label: "Solicitudes", icon: Inbox },
+      { href: "/reports", label: "Reportes", icon: BarChart3 },
       { href: "/requests/new", label: "Nueva solicitud", icon: FilePlus2 },
       { href: "/inbox", label: "Enlaces de acceso", icon: Send },
       { href: "/settings", label: "Correo SMTP", icon: Settings },
     ];
   }
   if (isAuditor(role)) {
-    return [{ href: "/admin-requests", label: "Solicitudes", icon: Inbox }];
+    return [
+      { href: "/admin-requests", label: "Solicitudes", icon: Inbox },
+      { href: "/reports", label: "Reportes", icon: BarChart3 },
+    ];
   }
   return [
     { href: "/sent", label: "Mis solicitudes", icon: Send },
+    { href: "/reports", label: "Reportes", icon: BarChart3 },
     { href: "/requests/new", label: "Nueva solicitud", icon: FilePlus2 },
   ];
 }
@@ -97,26 +102,41 @@ function Account({
   user: { name: string; email: string; area: string };
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-4">
-      <div className="flex min-w-0 items-center gap-3">
+    <div className="border-t border-line px-3 py-3">
+      <div className="flex items-center gap-2.5">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-soft text-xs font-semibold text-muted">
           {initials(user.name)}
         </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{user.name}</p>
-          <p className="truncate text-xs text-subtle">{user.area || user.email}</p>
+        <div className="min-w-0 flex-1 leading-tight">
+          <p className="whitespace-nowrap text-sm font-medium" title={user.name}>
+            {user.name}
+          </p>
+          <p className="truncate text-xs text-subtle" title={user.area || user.email}>
+            {user.area || user.email}
+          </p>
         </div>
-      </div>
-      <div className="flex shrink-0 items-center">
-        <ThemeToggle />
-        <form action={logoutAction}>
-          <button type="submit" className="ui-iconbtn" title="Cerrar sesión">
-            <LogOut className="size-4" />
-          </button>
-        </form>
+        <div className="flex shrink-0 items-center">
+          <ThemeToggle className="ui-iconbtn !min-h-9 !min-w-9" />
+          <form action={logoutAction}>
+            <button type="submit" className="ui-iconbtn !min-h-9 !min-w-9" title="Cerrar sesión">
+              <LogOut className="size-4" />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
+}
+
+function RouteChangeListener({ onChange }: { onChange: () => void }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    onChange();
+  }, [pathname, searchParams, onChange]);
+
+  return null;
 }
 
 export function Sidebar({
@@ -130,11 +150,16 @@ export function Sidebar({
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const nav = navForRole(user.role);
   const subtitle = pendingHref ? "Cargando…" : (roleLabel[user.role] ?? user.role);
-
-  useEffect(() => {
+  const clearPending = useCallback(() => {
     setPendingHref(null);
     setOpen(false);
-  }, [pathname]);
+  }, []);
+
+  useEffect(() => {
+    if (!pendingHref) return;
+    const timer = window.setTimeout(() => setPendingHref(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [pendingHref]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -178,8 +203,8 @@ export function Sidebar({
 
     function onSubmit(event: SubmitEvent) {
       const form = event.target as HTMLFormElement | null;
-      if (!form || form.method.toLowerCase() !== "get") return;
-      setPendingHref(pathname);
+      if (!form || form.getAttribute("method")?.toLowerCase() !== "get") return;
+      setPendingHref(`${pathname}${window.location.search}`);
       setOpen(false);
     }
 
@@ -200,6 +225,9 @@ export function Sidebar({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <RouteChangeListener onChange={clearPending} />
+      </Suspense>
       {navigating ? (
         <div className="nav-progress" role="progressbar" aria-label="Cargando página" />
       ) : null}
@@ -235,7 +263,7 @@ export function Sidebar({
           onClick={() => setOpen(false)}
         />
         <aside
-          className={`relative flex h-full w-[min(100%,280px)] flex-col bg-surface shadow-2xl transition-transform duration-200 ease-out ${
+          className={`relative flex h-full w-[min(100%,300px)] flex-col bg-surface shadow-2xl transition-transform duration-200 ease-out ${
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -252,7 +280,7 @@ export function Sidebar({
         </aside>
       </div>
 
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-surface/90 lg:flex">
+      <aside className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col border-r border-line bg-surface/90 lg:flex">
         <div className="px-4 py-5">
           <Brand subtitle={subtitle} />
         </div>

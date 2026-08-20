@@ -43,6 +43,10 @@ export function ActionsPanel({
     );
   }
 
+  if (status !== "DRAFT" && status !== "IN_PROGRESS") {
+    return null;
+  }
+
   return (
     <div className="ui-card space-y-3">
       <h2 className="font-medium">Acciones</h2>
@@ -66,16 +70,14 @@ export function ActionsPanel({
           Reenviar correos pendientes
         </button>
       ) : null}
-      {status === "DRAFT" || status === "IN_PROGRESS" ? (
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => run(() => cancelAction(requestId))}
-          className="ui-btn ui-btn-danger ui-btn-block"
-        >
-          Cancelar solicitud
-        </button>
-      ) : null}
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => run(() => cancelAction(requestId))}
+        className="ui-btn ui-btn-danger ui-btn-block"
+      >
+        Cancelar solicitud
+      </button>
       {message ? <p className="ui-alert ui-alert-danger">{message}</p> : null}
     </div>
   );

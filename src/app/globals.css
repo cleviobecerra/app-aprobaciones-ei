@@ -422,3 +422,55 @@ html.dark .login-mesh {
   transform: translateY(0);
   background: var(--soft);
 }
+
+.pdf-capture {
+  position: absolute;
+  left: -12000px;
+  top: 0;
+  width: 794px;
+  pointer-events: none;
+}
+
+.pdf-sheet {
+  box-sizing: border-box;
+  width: 794px;
+  height: auto;
+  overflow: visible;
+  padding: 28px;
+  color-scheme: light;
+  background: #f3f5f9;
+  color: #0b1220;
+  --background: #f3f5f9;
+  --surface: #ffffff;
+  --foreground: #0b1220;
+  --muted: #4b5563;
+  --subtle: #6b7280;
+  --line: #e5e7eb;
+  --line-hover: #cbd5e1;
+  --soft: #eef1f6;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-50: #eef2ff;
+  --primary-200: #c7d2fe;
+  --primary-700: #3730a3;
+  --danger: #dc2626;
+  --danger-50: #fef2f2;
+  --danger-700: #b91c1c;
+  --success: #059669;
+  --success-50: #ecfdf5;
+  --success-700: #047857;
+  --warning: #d97706;
+  --warning-50: #fffbeb;
+  --warning-700: #b45309;
+  --shadow: rgba(15, 23, 42, 0.04);
+  --shadow-hover: rgba(15, 23, 42, 0.35);
+}
+
+.pdf-sheet .stamp-ring {
+  box-shadow: none;
+}
+
+.pdf-sheet ol,
+.pdf-sheet li {
+  overflow: visible;
+}

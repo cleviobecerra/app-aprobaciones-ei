@@ -43,7 +43,7 @@ export function FlowTimeline({ stages, currentStage }: { stages: Stage[]; curren
         return (
           <li key={stage.id} className="relative flex gap-4 pb-8 last:pb-0">
             {index < stages.length - 1 ? (
-              <span className="absolute top-8 left-[15px] h-[calc(100%-16px)] w-px bg-line" />
+              <span className="absolute top-8 bottom-0 left-[15px] w-px bg-line" />
             ) : null}
             <div
               className={`relative z-10 mt-1 flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${

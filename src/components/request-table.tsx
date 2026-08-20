@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
-import { formatDate } from "@/lib/labels";
+import { DownloadRequestPdfIcon } from "@/components/download-request-pdf";
+import { formatDate, REQUEST_STATUS } from "@/lib/labels";
 import { hasActiveRequestFilters, type RequestListFilters } from "@/lib/request-query";
 import { displayName } from "@/lib/tokens";
 
@@ -48,25 +49,31 @@ export function RequestTable({
       <div className="space-y-3 md:hidden">
         {requests.map((request) => {
           const waiting = waitingOn(request);
+          const approved = request.status === REQUEST_STATUS.APPROVED;
           return (
-            <Link key={request.id} href={`/requests/${request.id}`} className="ui-card ui-card-hover block touch-manipulation">
+            <div key={request.id} className="ui-card">
               <div className="flex items-start justify-between gap-3">
-                <h3 className="min-w-0 break-words font-medium text-fg">{request.title}</h3>
-                <span className="shrink-0">
+                <Link href={`/requests/${request.id}`} className="min-w-0 font-medium text-fg hover:text-primary-700">
+                  {request.title}
+                </Link>
+                <div className="flex shrink-0 items-center gap-1">
                   <StatusBadge status={request.status} />
-                </span>
+                  {approved ? <DownloadRequestPdfIcon requestId={request.id} /> : null}
+                </div>
               </div>
-              {request.description ? (
-                <p className="mt-1 line-clamp-2 text-xs text-subtle">{request.description}</p>
-              ) : null}
-              <p className="mt-3 text-xs text-subtle">
-                {showCreator ? `${request.createdBy.name} · ` : null}
-                {formatDate(request.createdAt)}
-              </p>
-              {waiting.length ? (
-                <p className="mt-2 text-sm text-primary-700">Pendiente de: {waiting.join(", ")}</p>
-              ) : null}
-            </Link>
+              <Link href={`/requests/${request.id}`} className="mt-1 block touch-manipulation">
+                {request.description ? (
+                  <p className="line-clamp-2 text-xs text-subtle">{request.description}</p>
+                ) : null}
+                <p className="mt-3 text-xs text-subtle">
+                  {showCreator ? `${request.createdBy.name} · ` : null}
+                  {formatDate(request.createdAt)}
+                </p>
+                {waiting.length ? (
+                  <p className="mt-2 text-sm text-primary-700">Pendiente de: {waiting.join(", ")}</p>
+                ) : null}
+              </Link>
+            </div>
           );
         })}
       </div>
@@ -82,11 +89,13 @@ export function RequestTable({
                 <th className="px-4 py-3 font-medium">Creada</th>
                 <th className="px-4 py-3 font-medium">Actualizada</th>
                 <th className="px-4 py-3 font-medium">Pendiente de</th>
+                <th className="px-4 py-3 text-right font-medium">PDF</th>
               </tr>
             </thead>
             <tbody>
               {requests.map((request) => {
                 const waiting = waitingOn(request);
+                const approved = request.status === REQUEST_STATUS.APPROVED;
                 return (
                   <tr key={request.id} className="border-t border-line transition-colors hover:bg-soft">
                     <td className="px-4 py-3">
@@ -109,6 +118,9 @@ export function RequestTable({
                     <td className="px-4 py-3 whitespace-nowrap text-subtle">{formatDate(request.createdAt)}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-subtle">{formatDate(request.updatedAt)}</td>
                     <td className="px-4 py-3 text-muted">{waiting.length ? waiting.join(", ") : "—"}</td>
+                    <td className="px-2 py-2 text-right">
+                      {approved ? <DownloadRequestPdfIcon requestId={request.id} /> : <span className="pr-3 text-subtle">—</span>}
+                    </td>
                   </tr>
                 );
               })}

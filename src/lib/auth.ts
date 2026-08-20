@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtVerify, SignJWT } from "jose";
@@ -36,7 +37,7 @@ export async function clearSession() {
   jar.delete(COOKIE);
 }
 
-export async function getSessionUserId() {
+export const getSessionUserId = cache(async () => {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;
   if (!token) return null;
@@ -47,9 +48,9 @@ export async function getSessionUserId() {
   } catch {
     return null;
   }
-}
+});
 
-export async function getSessionUser() {
+export const getSessionUser = cache(async () => {
   const userId = await getSessionUserId();
   if (!userId) return null;
 
@@ -62,7 +63,7 @@ export async function getSessionUser() {
     console.error("getSessionUser", error);
     return null;
   }
-}
+});
 
 export async function requireUser() {
   const user = await getSessionUser();
